@@ -11,6 +11,7 @@ class HomeScreen extends StatelessWidget {
 
   HomeScreen({Key? key}) : super(key: key);
 
+  // 코드 추가
   @override
   Widget build(BuildContext context) {
     return Scaffold(
