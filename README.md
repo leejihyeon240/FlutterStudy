@@ -1,3 +1,3 @@
 # FlutterStudy
-inflearn - CodeFactory Course
+Inflearn CodeFactory Course
 
