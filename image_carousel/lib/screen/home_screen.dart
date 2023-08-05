@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    controller.dispose(); // controller도 타이머랑 같은 개념이라 dispose 해줘야 함
     // 과하게 소비되는 메모리를 막음
     if (timer != null) {
       timer!.cancel(); // timer가 null이 아닌데 인식 못해서 ! 붙여줌
@@ -47,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark); // 상태바 색깔 바꾸기
+
     return Scaffold(
       // 서랍, 스낵바, 하단 시트를 보여주고 플로팅 버튼을 보여줌
       body: PageView(
