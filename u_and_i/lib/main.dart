@@ -5,6 +5,7 @@ void main() {
   runApp(
     MaterialApp(
       theme: ThemeData(
+        fontFamily: 'sunflower',
         textTheme: TextTheme(
           headline1: TextStyle(
             color: Colors.white,
@@ -13,17 +14,14 @@ void main() {
           ),
           headline2: TextStyle(
               color: Colors.white,
-              fontFamily: 'sunflower',
               fontSize: 50.0,
               fontWeight: FontWeight.w700),
           bodyText1: TextStyle(
             color: Colors.white,
-            fontFamily: 'sunflower',
             fontSize: 30.0,
           ),
           bodyText2:TextStyle(
             color: Colors.white,
-            fontFamily: 'sunflower',
             fontSize: 20.0,
           ),
         ),
