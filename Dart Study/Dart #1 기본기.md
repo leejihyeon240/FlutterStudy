@@ -364,3 +364,360 @@ void main() {
    print(blankPink.indexOf('지수')); // 몇 번째?
 }
 ```
+<br>
+
+### CODE 14
+
+```
+void main() {
+  
+  // Map
+  // Key / Value 이렇게 짝을 지어야함
+  
+  Map<String, String> dictionary = {
+    'Harry Potter' : '해리포터',
+    'Ron Weasley' : '론 위즐리' // Map은 항상 Key를 이용하여 Value 값을 찾음
+  };
+  
+  print(dictionary);
+  
+  Map<String, bool> isHarryPotter = {
+    'Harry Potter' : true,
+    'Ron Weasley' : true,
+    'Iron Man' : false,// Map은 항상 Key를 이용하여 Value 값을 찾음
+  };
+  
+  print(isHarryPotter);
+  
+  // Map<타입, 타입> --> 타입을 마음대로 지정할 수 있음
+  // ** 타입에 맞는 값을 넣어줘야함
+  
+  // addAll() 함수
+  isHarryPotter.addAll({ // map에 값을 추가하는 방법
+    'Spider Man' : false,
+  });
+  
+  print(isHarryPotter); 
+  
+  // 원하는 key에 해당하는 값 가져오기
+  // ** value에 해당하는 값을 못 가져옴, 무조건 key에 해당하는 값
+  print(isHarryPotter['Iron Man']);
+  
+  // 임의적으로 값을 추가하는 방법
+  isHarryPotter['Hulk'] = false;
+  print(isHarryPotter); 
+  
+  // 위에 방식 추가 예시
+  // 갑자기 스파이더맨이 출연한다고 해서 false에서 true로 값을 바꾸는 법
+  isHarryPotter['Spider Man'] = true;
+  print(isHarryPotter); 
+
+  // remove() 함수 : 값 지우기
+  isHarryPotter.remove('Harry Potter');
+  print(isHarryPotter); 
+  
+  // key값만 받는 법
+  print(isHarryPotter.keys); 
+  
+  // values값만 받는 법
+  print(isHarryPotter.values); 
+
+
+}
+```
+
+<br>
+
+### CODE 15
+
+```
+void main() {
+  
+  // Set : 자동으로 중복 처리해줌, 같은 값 못 씀
+  final Set<String> names = {
+    'a',
+    'b',
+    'c',
+    'c'
+  };
+  
+  print(names);
+  
+  // 새로운 값 넣기
+  names.add('jenny');
+  print(names);
+
+  // 기존 값 지우기
+  names.remove('jenny');
+  print(names);
+
+  // 다음 값이 존재하는 지
+  print(names.contains('jennt'));
+}
+```
+
+<br>
+
+### CODE 16
+
+```
+void main() {
+  
+  // if문
+  
+  int number = 2;
+  
+  // if(조건) - else if(조건) - else
+  if(number % 3 == 0){ // (조건) --> 짝수
+    print('나머지가 0입니다.');
+  } else if(number % 3 == 1) {
+    print('나머지가 1입니다.');
+  } else {
+    print('나머지가 2입니다');
+  }
+  
+  // switch문
+  
+  int number2 = 1;
+  
+  switch(number2 % 3){
+    case 0:
+      print('나머지가 0입니다.');
+      break;
+      
+    case 1:
+      print('나머지가 1입니다.');
+      break;
+      
+    // default == (if문의)else
+    default:
+      print('나머지가 2입니다.');
+      break;
+  }
+  
+  // for loop : 반복적인 문제를 해결할 때 쓰기 좋음
+  for(int i = 0; i < 10; i++){
+    print(i);
+  }
+  
+  // 1번 방법 : i를 인덱스로 사용
+  int total = 0;
+  
+  List<int> numbers = [1, 2, 3, 4, 5, 6];
+  
+  for(int i = 0; i < numbers.length; i++){
+    total += numbers[i];
+  }
+  
+  print(total);
+  
+  // 2번 방법 : for in loop
+  
+  total = 0;
+  
+  // in의 오른쪽에 있는 값들이 왼쪽에 하나씩 들어감
+  for(int number in numbers){
+    print(number);
+    total += number;
+  }
+  
+  print(total);
+
+  // while loop
+  
+  total = 0;
+  
+  while(total < 10){
+    total += 1;
+  }
+  
+  print(total);
+  
+  // do while문 --> 거의 안 씀
+  
+  total = 0;
+  
+  do {
+    total += 1;
+  } while(total < 10);
+  
+  print(total);
+  
+  // while과 break
+
+  total = 0;
+  
+  while(total < 10){
+    total += 1;
+    
+    if(total == 5){
+      break;
+    }
+  }
+  
+  print(total);
+  
+  // for와 break
+  
+  total = 0;
+  
+  for(int i = 0; i < 10; i++){
+    total += 1;
+    if(total == 5){
+      break;
+    }
+  }
+  
+ print(total);
+
+  // continue = 현재 조건만 스킵하라는 뜻
+  for(int i = 0; i < 10; i++){
+    if(i == 5){ // 5만 안 찍힘
+      continue; // 현재 loop를 종료하시오
+    }
+    print(i);
+  }
+  
+}
+```
+
+<br>
+
+### CODE 17
+
+```
+// enum을 사용하는 이유
+// 정확히 이 3개의 값밖에 존재하지 않는 다는 걸, 다른 개발자와 미래의 나에게 알려줄 수 있음
+// 또는 오타 발견 가능
+// 그 타입만 사용할 수 있도록 강제할 수 있음
+
+enum Status { 
+  approved, // 승인
+  pending, // 대기
+  rejected, // 거절
+}
+
+void main() {
+  Status status = Status.pending;
+  
+  if(status == Status.approved){
+    print('승인입니다.');
+  }else if(status == Status.pending){
+    print('대기입니다.');
+  }else{
+    print('거절입니다.');
+  }
+}
+```
+<br>
+
+### CODE 18
+
+```
+//void = 공허라는 뜻
+void main() { // main 함수는 자동으로 실행되는 함수
+  addNumbers(y: 20, x: 10);
+  
+  addNumbers(x: 10, y: 30, z: 40);
+}
+
+// 세개의 숫자 (x,y,z)를 더하고 짝수인지 홀수인지 알려주는 함수
+// parameter / argument - 매개변수
+
+// positional parameter - 순서가 중요한 파라미터
+
+// optional patameter - 있어도 되고 없어도 되는 파라미터, **[] 대괄호를 넣어주면 됨
+// int에서 null을 넣으려면 int? 이렇게 물음표를 붙여줘야함
+// []를 고정값으로 하고 싶으면 int y = 20 이런 식으로 해주면 됨
+
+// named parameter - 이름이 있는 파라미터 (순서가 중요하지 않다.)
+// required로 이름을 정해주고, 함수 호출할 때 x : ~ 이렇게 값 넣어줘야함
+// 그럼 named에서는 optional 파라미터 못 하냐? ㄴㄴ 가능
+// required 안 해주고 값 지정해주면 됨
+
+addNumbers({
+  required int x,
+  required int y,
+  int z = 30,
+}) { // 외부에서 받은 x, y, z
+  int sum = x + y + z;
+  
+  print('x : $x');
+  print('y : $y');
+  print('z : $z');
+  
+  if (sum % 2 == 0) {
+    print('짝수입니다.');
+  } else {
+    print('홀수입니다.');
+  }
+}
+```
+<br>
+
+### CODE 19
+
+```
+void main(){ 
+  int result = addNumbers(10, y: 20);
+  
+  int result2 = addNumbers(10, y: 30, z: 40);
+  
+  print('result : $result');
+  print('result2 : $result2');
+  
+  print('sum : ${result + result2}');
+}
+
+// arrow function - 화살표 함수
+
+int addNumbers(int x, {
+  required int y,
+  int z = 30,
+}) => x + y + z; // 화살표 옆에 오는 값들이 반환되는 값들임
+```
+
+<br>
+
+### CODE 20
+
+```
+void main(){ 
+  Operation operation = add;
+  
+  int result = operation(10, 20, 30);
+  
+  print(result);
+  
+  operation = subtract;
+  
+  int result2 = operation(10, 20, 30);
+  
+  print(result2);
+  
+  int result3 = calculate(10, 20, 30, add);
+  
+  print(result3);
+  
+  int result4 = calculate(10, 20, 30, subtract);
+  
+  print(result4);
+}
+
+// signature
+typedef Operation = int Function(int x, int y, int z);
+
+// 더하기
+int add(int x, int y, int z) => x + y + z;
+
+// 빼기
+int subtract(int x, int y, int z) => x - y - z;
+
+// 계산
+int calculate(int x, int y, int z, Operation operation){
+  return operation(x, y, z);
+}
+```
+
+<br>
+
