@@ -37,6 +37,11 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+
+    if(videoPlayerController == null){
+      return CircularProgressIndicator(); // 로딩바 띄우기
+    }
+
+    return VideoPlayer(videoPlayerController!,);
   }
 }
