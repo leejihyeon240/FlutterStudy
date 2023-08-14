@@ -15,7 +15,7 @@ class CustomVideoPlayer extends StatefulWidget {
 }
 
 class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
-  VideoPlayerController? videoPlayerController;
+  VideoPlayerController? videoController;
 
   @override
   void initState() {
@@ -24,11 +24,11 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   }
 
   initializeController() async { // initState()는 async를 사용할 수 없어서 새로운 함수 만들어서 저쪽에서 불러오도록 해야함
-    videoPlayerController = VideoPlayerController.file(
+    videoController = VideoPlayerController.file(
       File(widget.video.path),
     );
 
-    await videoPlayerController!.initialize();
+    await videoController!.initialize();
 
     setState(() {
 
@@ -38,10 +38,15 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   @override
   Widget build(BuildContext context) {
 
-    if(videoPlayerController == null){
+    if(videoController == null){
       return CircularProgressIndicator(); // 로딩바 띄우기
     }
 
-    return VideoPlayer(videoPlayerController!,);
+    return AspectRatio(
+      aspectRatio: videoController!.value.aspectRatio,
+      child: VideoPlayer(
+          videoController!,
+      ),
+    );
   }
 }
