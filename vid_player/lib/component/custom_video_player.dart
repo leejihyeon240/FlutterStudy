@@ -15,6 +15,7 @@ class CustomVideoPlayer extends StatefulWidget {
 
 class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   VideoPlayerController? videoController;
+  Duration currentPosition = Duration();
 
   @override
   void initState() {
@@ -31,6 +32,16 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     );
 
     await videoController!.initialize();
+
+    videoController!.addListener(() async {
+      // videoController의 값이 변경될 때마다 실행이 됨
+      final currentPosition = videoController!.value.position;
+
+      setState(() {
+        // 슬라이더 작동
+        this.currentPosition = currentPosition;
+      });
+    });
 
     setState(() {});
   }
@@ -58,14 +69,24 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
           _NewVideo(
             onPressed: onNewVideoPressed,
           ),
+          _SliderBottom(
+              currentPosition: currentPosition,
+              maxPosition: videoController!.value.duration,
+              onSliderChanged: onSliderChanged),
         ],
       ),
     );
   }
 
-  void onNewVideoPressed() {
-
+  void onSliderChanged(double val) {
+    videoController!.seekTo(
+      Duration(
+        seconds: val.toInt(),
+      ),
+    );
   }
+
+  void onNewVideoPressed() {}
 
   void onReversePressed() {
     final currentPosition = videoController!.value.position; // 현재 영상 포지션
@@ -102,12 +123,12 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     Duration position = maxPosition;
 
     // 최대 포지션에서 3을 뺀 값보다 작다면, +3초
-    if ((maxPosition-Duration(seconds: 3)).inSeconds > currentPosition.inSeconds) {
+    if ((maxPosition - Duration(seconds: 3)).inSeconds >
+        currentPosition.inSeconds) {
       position = currentPosition + Duration(seconds: 3); // 현재에서 3초 뺀 값
     }
 
     videoController!.seekTo(position); // seekTo --> 지점 찾기
-
   }
 }
 
@@ -175,6 +196,57 @@ class _NewVideo extends StatelessWidget {
         iconSize: 30.0,
         icon: Icon(
           Icons.photo_camera_back,
+        ),
+      ),
+    );
+  }
+}
+
+class _SliderBottom extends StatelessWidget {
+  final Duration currentPosition;
+  final Duration maxPosition;
+  final ValueChanged<double> onSliderChanged; // 외부 함수
+
+  const _SliderBottom(
+      {required this.currentPosition,
+      required this.maxPosition,
+      required this.onSliderChanged,
+        Key? key,
+      }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      right: 0,
+      left: 0,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          children: [
+            Text(
+              '${currentPosition.inMinutes}:${(currentPosition.inSeconds % 60).toString().padLeft(2, '0')}',
+              // padLeft --> 2자리 수 보여줄 거고, 공백에는 0을 넣어줄 것이다
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            Expanded(
+              child: Slider(
+                value: currentPosition.inSeconds.toDouble(),
+                onChanged: onSliderChanged,
+                max: maxPosition.inSeconds.toDouble(),
+                min: 0,
+              ),
+            ),
+            Text(
+              '${maxPosition.inMinutes}:${(maxPosition.inSeconds % 60).toString().padLeft(2, '0')}',
+              // padLeft --> 2자리 수 보여줄 거고, 공백에는 0을 넣어줄 것이다
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );
