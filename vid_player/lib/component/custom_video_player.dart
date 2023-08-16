@@ -20,6 +20,9 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    initializeController();
+
   }
 
   initializeController() async {
@@ -48,6 +51,17 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
             videoController!,
           ),
           _Controls(),
+          Positioned(
+            right: 0,
+            child: IconButton(
+              onPressed: () {},
+              color: Colors.white,
+              iconSize: 30.0,
+              icon: Icon(
+                Icons.photo_camera_back,
+              ),
+            ),
+          ),
         ],
       ),
     );
