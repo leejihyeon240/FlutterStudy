@@ -55,20 +55,16 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
             onForwardPressed: onForwardPressed,
             isPlaying: videoController!.value.isPlaying,
           ),
-          Positioned(
-            right: 0,
-            child: IconButton(
-              onPressed: () {},
-              color: Colors.white,
-              iconSize: 30.0,
-              icon: Icon(
-                Icons.photo_camera_back,
-              ),
-            ),
+          _NewVideo(
+            onPressed: onNewVideoPressed,
           ),
         ],
       ),
     );
+  }
+
+  void onNewVideoPressed() {
+
   }
 
   void onReversePressed() {
@@ -159,6 +155,27 @@ class _Controls extends StatelessWidget {
       color: Colors.white,
       icon: Icon(
         iconData,
+      ),
+    );
+  }
+}
+
+class _NewVideo extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _NewVideo({required this.onPressed, Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      right: 0,
+      child: IconButton(
+        onPressed: () {},
+        color: Colors.white,
+        iconSize: 30.0,
+        icon: Icon(
+          Icons.photo_camera_back,
+        ),
       ),
     );
   }
