@@ -22,7 +22,6 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     super.initState();
 
     initializeController();
-
   }
 
   initializeController() async {
@@ -50,7 +49,12 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
           VideoPlayer(
             videoController!,
           ),
-          _Controls(),
+          _Controls(
+            onReversePressed: onReversePressed,
+            onPlayPressed: onPlayPressed,
+            onForwardPressed: onForwardPressed,
+            isPlaying: videoController!.value.isPlaying,
+          ),
           Positioned(
             right: 0,
             child: IconButton(
@@ -66,10 +70,64 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
       ),
     );
   }
+
+  void onReversePressed() {
+    final currentPosition = videoController!.value.position; // 현재 영상 포지션
+
+    // 만약에 2초 재생인데 누르면, 0초로 돌아가게끔
+    Duration position = Duration(); // 기본 포지션은 0초, -2초전 이런 건 없으니까 미리 방지하기 위한
+
+    if (currentPosition.inSeconds > 3) {
+      position = currentPosition - Duration(seconds: 3); // 현재에서 3초 뺀 값
+    }
+
+    videoController!.seekTo(position); // seekTo --> 지점 찾기
+  }
+
+  void onPlayPressed() {
+    // 이미 실행 중이면 중지
+    // 실행 중이 아니면 실행
+    setState(() {
+      // setState 해줘야함, 안 해주면 안 변함
+      if (videoController!.value.isPlaying) {
+        // isPlaying --> 실행 중인지
+        videoController!.pause(); // 중지
+      } else {
+        videoController!.play(); // 재생
+      }
+    });
+  }
+
+  void onForwardPressed() {
+    final maxPosition = videoController!.value.duration; // 전체 영상 길이
+    final currentPosition = videoController!.value.position; // 현재 영상 포지션
+
+    // if 조건에 해당 안 될 경우, 최대 포지션
+    Duration position = maxPosition;
+
+    // 최대 포지션에서 3을 뺀 값보다 작다면, +3초
+    if ((maxPosition-Duration(seconds: 3)).inSeconds > currentPosition.inSeconds) {
+      position = currentPosition + Duration(seconds: 3); // 현재에서 3초 뺀 값
+    }
+
+    videoController!.seekTo(position); // seekTo --> 지점 찾기
+
+  }
 }
 
 class _Controls extends StatelessWidget {
-  const _Controls({super.key});
+  final VoidCallback onPlayPressed;
+  final VoidCallback onReversePressed;
+  final VoidCallback onForwardPressed;
+  final bool isPlaying;
+
+  const _Controls({
+    required this.onPlayPressed,
+    required this.onReversePressed,
+    required this.onForwardPressed,
+    required this.isPlaying,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +137,13 @@ class _Controls extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          renderIconButton(onPressed: () {}, iconData: Icons.rotate_left),
-          renderIconButton(onPressed: () {}, iconData: Icons.play_arrow),
-          renderIconButton(onPressed: () {}, iconData: Icons.rotate_right),
+          renderIconButton(
+              onPressed: onReversePressed, iconData: Icons.rotate_left),
+          renderIconButton(
+              onPressed: onPlayPressed,
+              iconData: isPlaying ? Icons.pause : Icons.play_arrow),
+          renderIconButton(
+              onPressed: onForwardPressed, iconData: Icons.rotate_right),
         ],
       ),
     );
