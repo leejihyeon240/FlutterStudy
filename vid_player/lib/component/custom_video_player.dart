@@ -6,8 +6,11 @@ import 'package:video_player/video_player.dart';
 
 class CustomVideoPlayer extends StatefulWidget {
   final XFile video;
+  final VoidCallback onNewVideoPressed; // 외부에서 받아줘야힘
 
-  const CustomVideoPlayer({required this.video, Key? key}) : super(key: key);
+  const CustomVideoPlayer(
+      {required this.video, required this.onNewVideoPressed, Key? key})
+      : super(key: key);
 
   @override
   State<CustomVideoPlayer> createState() => _CustomVideoPlayerState();
@@ -16,6 +19,7 @@ class CustomVideoPlayer extends StatefulWidget {
 class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   VideoPlayerController? videoController;
   Duration currentPosition = Duration();
+  bool showControls = false;
 
   @override
   void initState() {
@@ -25,7 +29,19 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     initializeController();
   }
 
+  //  영상 바꼈을 때 다시 init 되야함
+  @override
+  void didUpdateWidget(covariant CustomVideoPlayer oldWidget){
+    super.didUpdateWidget(oldWidget);
+
+    if(oldWidget.video.path != widget.video.path){
+      initializeController();
+    }
+  }
+
   initializeController() async {
+    currentPosition = Duration(); // 버그 수정
+
     // initState()는 async를 사용할 수 없어서 새로운 함수 만들어서 저쪽에서 불러오도록 해야함
     videoController = VideoPlayerController.file(
       File(widget.video.path),
@@ -55,25 +71,34 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     return AspectRatio(
       // 원래 비율로 설정
       aspectRatio: videoController!.value.aspectRatio,
-      child: Stack(
-        children: [
-          VideoPlayer(
-            videoController!,
-          ),
-          _Controls(
-            onReversePressed: onReversePressed,
-            onPlayPressed: onPlayPressed,
-            onForwardPressed: onForwardPressed,
-            isPlaying: videoController!.value.isPlaying,
-          ),
-          _NewVideo(
-            onPressed: onNewVideoPressed,
-          ),
-          _SliderBottom(
-              currentPosition: currentPosition,
-              maxPosition: videoController!.value.duration,
-              onSliderChanged: onSliderChanged),
-        ],
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            showControls = !showControls; // 재생, 앞, 뒤 버튼 보이게 - 안 보이게
+          });
+        },
+        child: Stack(
+          children: [
+            VideoPlayer(
+              videoController!,
+            ),
+            if (showControls)
+              _Controls(
+                onReversePressed: onReversePressed,
+                onPlayPressed: onPlayPressed,
+                onForwardPressed: onForwardPressed,
+                isPlaying: videoController!.value.isPlaying,
+              ),
+            if (showControls)
+              _NewVideo(
+                onPressed: widget.onNewVideoPressed, // 외부에서 받기
+              ),
+            _SliderBottom(
+                currentPosition: currentPosition,
+                maxPosition: videoController!.value.duration,
+                onSliderChanged: onSliderChanged),
+          ],
+        ),
       ),
     );
   }
@@ -85,8 +110,6 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
       ),
     );
   }
-
-  void onNewVideoPressed() {}
 
   void onReversePressed() {
     final currentPosition = videoController!.value.position; // 현재 영상 포지션
@@ -150,8 +173,8 @@ class _Controls extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black.withOpacity(0.5),
+      height: MediaQuery.of(context).size.height,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           renderIconButton(
@@ -191,7 +214,7 @@ class _NewVideo extends StatelessWidget {
     return Positioned(
       right: 0,
       child: IconButton(
-        onPressed: () {},
+        onPressed: onPressed,
         color: Colors.white,
         iconSize: 30.0,
         icon: Icon(
@@ -207,12 +230,12 @@ class _SliderBottom extends StatelessWidget {
   final Duration maxPosition;
   final ValueChanged<double> onSliderChanged; // 외부 함수
 
-  const _SliderBottom(
-      {required this.currentPosition,
-      required this.maxPosition,
-      required this.onSliderChanged,
-        Key? key,
-      }) : super(key: key);
+  const _SliderBottom({
+    required this.currentPosition,
+    required this.maxPosition,
+    required this.onSliderChanged,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
