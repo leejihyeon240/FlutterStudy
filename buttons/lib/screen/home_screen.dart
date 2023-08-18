@@ -33,12 +33,13 @@ class HomeScreen extends StatelessWidget {
                 ),
                 foregroundColor: MaterialStateProperty.resolveWith(
                     (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.pressed)) {
+                  if (states.contains(MaterialState.pressed)) { // 눌렀을 때
                     return Colors.red;
                   }
 
-                  return null;
+                  return null; // 안 눌렀을 때
                 }),
+                // padding --> 리턴 = EdgeInsets
                 padding: MaterialStateProperty.resolveWith(
                   (Set<MaterialState> states) {
                     if(states.contains(MaterialState.pressed)){
@@ -56,7 +57,7 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                // 메인 칼라
+                // 메인 칼라 (배경색)
                 primary: Colors.red,
                 // 글자 및 애니메이션 색깔
                 onPrimary: Colors.black,
@@ -69,7 +70,7 @@ class HomeScreen extends StatelessWidget {
                   fontSize: 20.0,
                 ),
                 padding: EdgeInsets.all(32.0),
-                side: BorderSide(
+                side: BorderSide( // 테두리
                   color: Colors.black,
                   width: 4.0,
                 ),
@@ -78,10 +79,10 @@ class HomeScreen extends StatelessWidget {
                 'ElevatedButton',
               ),
             ),
-            OutlinedButton(
+            OutlinedButton( // 테두리만 있는 버튼
               onPressed: () {},
               style: OutlinedButton.styleFrom(
-                primary: Colors.green,
+                primary: Colors.green, // 눌렀을 때 배경색, ElevatedButton랑 다른 점 --> primary의 역할
                 backgroundColor: Colors.yellow,
                 elevation: 10.0,
               ),
@@ -89,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                 'OutlinedButton',
               ),
             ),
-            TextButton(
+            TextButton( // 글자만 있는 버튼
               onPressed: () {},
               style: TextButton.styleFrom(
                 primary: Colors.brown,
