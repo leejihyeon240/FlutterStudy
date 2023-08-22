@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:navigation/screen/route_one_screen.dart';
-import 'package:navigation/layout/main_layout.dart/';
+import 'package:navigation/layout/main_layout.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,10 +11,12 @@ class HomeScreen extends StatelessWidget {
       title: 'Home Screen',
       children: [
         ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).push(
+          onPressed: () async {
+            final result = await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (BuildContext context) => RouteOneScreen(),
+                builder: (BuildContext context) => RouteOneScreen(
+                  number: 123,
+                ),
               ),
             );
           },
