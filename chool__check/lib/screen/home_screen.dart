@@ -47,7 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
             if (snapshot.data == '위치 권한이 허가 되었습니다.') {
               return Column(
                 children: [
-                  _CustomGoogleMap(initialPosition: initialPosition),
+                  _CustomGoogleMap(
+                    initialPosition: initialPosition,
+                    circle: circle,
+                  ),
                   _ChoolCheckButton(),
                 ],
               );
@@ -100,9 +103,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _CustomGoogleMap extends StatelessWidget {
   final CameraPosition initialPosition;
+  final Circle circle;
 
   const _CustomGoogleMap({
     required this.initialPosition,
+    required this.circle,
   });
 
   @override
@@ -114,6 +119,7 @@ class _CustomGoogleMap extends StatelessWidget {
         initialCameraPosition: initialPosition,
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
+        circles: Set.from([circle]),
       ),
     );
   }
