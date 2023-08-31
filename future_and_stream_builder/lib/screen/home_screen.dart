@@ -19,6 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
+        // FutureBuilder --> 캐싱 기능이 자동으로 있다, 기존의 값을 기억
+        // FutureBuilder(
+        // future: getNumber(),
+        // builder: (context, snapshot) {
         child: StreamBuilder<int>(
           stream: streamNumbers(),
           builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
