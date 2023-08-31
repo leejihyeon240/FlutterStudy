@@ -11,6 +11,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool choolCheckDone = false; // 기본 값 --> 출근 안 한 상태
+  GoogleMapController? mapController;
 
   // latitude - 위도 , longitude - 경도
   static final LatLng companyLatLng = LatLng(
@@ -56,92 +57,76 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: renderAppBar(),
-        body: FutureBuilder<String>(
-          future: checkPermission(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+      appBar: renderAppBar(),
+      body: FutureBuilder<String>(
+        future: checkPermission(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-            if (snapshot.data == '위치 권한이 허가 되었습니다.') {
-              return StreamBuilder<Position>(
-                  stream: Geolocator.getPositionStream(), // 움직일 때마다 찍힘
-                  builder: (context, snapshot) {
-                    bool isWithinRange =
-                        false; // isWithinRange --> 현재 위치가 원 안에 있는 지?
+          if (snapshot.data == '위치 권한이 허가 되었습니다.') {
+            return StreamBuilder<Position>(
+              stream: Geolocator.getPositionStream(), // 움직일 때마다 찍힘
+              builder: (context, snapshot) {
+                bool isWithinRange =
+                    false; // isWithinRange --> 현재 위치가 원 안에 있는 지?
 
-                    if (snapshot.hasData) {
-                      final start = snapshot.data!; // 현재 위치
-                      final end = companyLatLng;
+                if (snapshot.hasData) {
+                  final start = snapshot.data!; // 현재 위치
+                  final end = companyLatLng;
 
-                      final distance = Geolocator.distanceBetween(
-                        // 거리 계산
-                        start.latitude,
-                        start.longitude,
-                        end.latitude,
-                        end.longitude,
-                      );
+                  final distance = Geolocator.distanceBetween(
+                    // 거리 계산
+                    start.latitude,
+                    start.longitude,
+                    end.latitude,
+                    end.longitude,
+                  );
 
-                      if (distance < okDistance) {
-                        // 두 거리가 100m(okDistance) 보다 작으면 원 안에 있는 것
-                        isWithinRange = true;
-                      }
-                    }
+                  if (distance < okDistance) {
+                    // 두 거리가 100m(okDistance) 보다 작으면 원 안에 있는 것
+                    isWithinRange = true;
+                  }
+                }
 
-                    return Column(
-                      children: [
-                        _CustomGoogleMap(
-                          initialPosition: initialPosition,
-                          circle: choolCheckDone
-                              ? checkDoneCircle // choolCheckDone이 true
-                              : isWithinRange // choolCheckDone이 false면 다시 한번 조건문 발생
+                return Column(
+                  children: [
+                    _CustomGoogleMap(
+                      initialPosition: initialPosition,
+                      circle: choolCheckDone
+                          ? checkDoneCircle // choolCheckDone이 true
+                          : isWithinRange // choolCheckDone이 false면 다시 한번 조건문 발생
                               ? withinDistanceCircle
                               : notWithinDistanceCircle,
-                          marker: marker,
-                        ),
-                        _ChoolCheckButton(
-                          isWithinRange: isWithinRange,
-                          choolCheckDone: choolCheckDone,
-                          onPressed: onChoolCheckPressed,
-                        ),
-                      ],
-                    );
-                  });
-            }
-
-            return Center(
-              child: Text(snapshot.data),
+                      marker: marker,
+                      onMapCreated: onMapCreated,
+                    ),
+                    _ChoolCheckButton(
+                      isWithinRange: isWithinRange,
+                      choolCheckDone: choolCheckDone,
+                      onPressed: onChoolCheckPressed,
+                    ),
+                  ],
+                );
+              },
             );
-          },
-        ));
+          }
+
+          return Center(
+            child: Text(snapshot.data),
+          );
+        },
+      ),
+    );
   }
 
-  Future<String> checkPermission() async {
-    final isLocationEnabled = await Geolocator.isLocationServiceEnabled();
-
-    if (!isLocationEnabled) {
-      return '위치 서비스를 활성화 해주세요.';
-    }
-
-    LocationPermission checkedPermission = await Geolocator.checkPermission();
-
-    if (checkedPermission == LocationPermission.denied) {
-      checkedPermission = await Geolocator.requestPermission();
-
-      if (checkedPermission == LocationPermission.denied) {
-        return '위치 권한을 허가해주세요.';
-      }
-    }
-
-    if (checkedPermission == LocationPermission.deniedForever) {
-      return '앱의 위치 권한을 세팅에서 허가해주세요.';
-    }
-
-    return '위치 권한이 허가 되었습니다.';
+  onMapCreated(GoogleMapController controller) {
+    mapController = controller;
   }
+
 
   onChoolCheckPressed() async {
     final result = await showDialog(
@@ -168,11 +153,36 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
 
-    if (result) { // result가 ture면
+    if (result) {
+      // result가 ture면
       setState(() {
         choolCheckDone = true; // 이렇게 바꿔줌
       });
     }
+  }
+
+  Future<String> checkPermission() async {
+    final isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!isLocationEnabled) {
+      return '위치 서비스를 활성화 해주세요.';
+    }
+
+    LocationPermission checkedPermission = await Geolocator.checkPermission();
+
+    if (checkedPermission == LocationPermission.denied) {
+      checkedPermission = await Geolocator.requestPermission();
+
+      if (checkedPermission == LocationPermission.denied) {
+        return '위치 권한을 허가해주세요.';
+      }
+    }
+
+    if (checkedPermission == LocationPermission.deniedForever) {
+      return '앱의 위치 권한을 세팅에서 허가해주세요.';
+    }
+
+    return '위치 권한이 허가 되었습니다.';
   }
 
   AppBar renderAppBar() {
@@ -185,6 +195,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       backgroundColor: Colors.white,
+      actions: [
+        IconButton(
+          onPressed: () async {
+            if (mapController == null) {
+              return;
+            }
+
+            final location = await Geolocator.getCurrentPosition();
+
+            mapController!.animateCamera(
+              CameraUpdate.newLatLng(
+                LatLng(
+                  location.latitude,
+                  location.longitude,
+                ),
+              ),
+            );
+          },
+          color: Colors.blue,
+          icon: Icon(
+            Icons.my_location,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -193,12 +227,15 @@ class _CustomGoogleMap extends StatelessWidget {
   final CameraPosition initialPosition;
   final Circle circle;
   final Marker marker;
+  final MapCreatedCallback onMapCreated;
 
   const _CustomGoogleMap({
     required this.initialPosition,
     required this.circle,
     required this.marker,
-  });
+    required this.onMapCreated,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +248,7 @@ class _CustomGoogleMap extends StatelessWidget {
         myLocationButtonEnabled: false,
         circles: Set.from([circle]),
         markers: Set.from([marker]),
+        onMapCreated: onMapCreated,
       ),
     );
   }
@@ -228,7 +266,6 @@ class _ChoolCheckButton extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -241,8 +278,8 @@ class _ChoolCheckButton extends StatelessWidget {
             color: choolCheckDone
                 ? Colors.green
                 : isWithinRange
-                ? Colors.blue
-                : Colors.red,
+                    ? Colors.blue
+                    : Colors.red,
           ),
           const SizedBox(height: 20.0),
           if (!choolCheckDone && isWithinRange)
