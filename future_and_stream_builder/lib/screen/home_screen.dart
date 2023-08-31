@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return random.nextInt(100);
   }
 
-  Stream<int> streamNumbers() async* {
+  Stream<int> streamNumbers() async* { // active 상태 - 진행 중(숫자가 계속 올라가는 중)
     for(int i = 0 ; i < 10; i ++){
       if(i == 5){
         throw Exception('i = 5');
