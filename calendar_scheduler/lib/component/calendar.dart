@@ -3,21 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
-  const Calendar({super.key});
+  final DateTime? selectedDay;
+  final DateTime focuseDay;
+  final OnDaySelected? onDaySelected;
+
+  const Calendar(
+      {required this.selectedDay,
+      required this.focuseDay,
+      required this.onDaySelected});
 
   @override
   State<Calendar> createState() => _CalendarState();
 }
 
 class _CalendarState extends State<Calendar> {
-  DateTime? selectedDay;
-  DateTime focuseDay = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     final defaultBoxDeco = BoxDecoration(
-        borderRadius: BorderRadius.circular(6.0),
-        color: Colors.grey[200],
+      borderRadius: BorderRadius.circular(6.0),
+      color: Colors.grey[200],
     );
 
     final defaultTextStyle = TextStyle(
@@ -27,7 +31,7 @@ class _CalendarState extends State<Calendar> {
 
     return TableCalendar(
       locale: 'ko_KR',
-      focusedDay: focuseDay,
+      focusedDay: widget.focuseDay, // 외부에서 값을 받아올 때 final로 해주고, widget 붙여주면 됨
       firstDay: DateTime(1800), // 가장 첫번째 년도
       lastDay: DateTime(3000), // 가장 미래의 년도
       headerStyle: HeaderStyle(
@@ -59,20 +63,16 @@ class _CalendarState extends State<Calendar> {
           color: PRIMARY_COLOR,
         ),
       ),
-      onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-        setState(() {
-          this.selectedDay = selectedDay;
-          this.focuseDay = selectedDay; // 선택된 날짜 상태 업데이트
-        });
-      },
-      selectedDayPredicate: (DateTime date) { // 선택된 날짜 표시하는 법
-        if (selectedDay == null) {
+      onDaySelected: widget.onDaySelected,
+      selectedDayPredicate: (DateTime date) {
+        // 선택된 날짜 표시하는 법
+        if (widget.selectedDay == null) {
           return false;
         }
 
-        return date.year == selectedDay!.year &&
-            date.month == selectedDay!.month &&
-            date.day == selectedDay!.day;
+        return date.year == widget.selectedDay!.year &&
+            date.month == widget.selectedDay!.month &&
+            date.day == widget.selectedDay!.day;
       },
     );
   }
