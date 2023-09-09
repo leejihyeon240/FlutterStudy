@@ -2,21 +2,16 @@ import 'package:calendar_scheduler/const/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class Calendar extends StatefulWidget {
+class Calendar extends StatelessWidget {
   final DateTime? selectedDay;
   final DateTime focuseDay;
   final OnDaySelected? onDaySelected;
 
   const Calendar(
       {required this.selectedDay,
-      required this.focuseDay,
-      required this.onDaySelected});
+        required this.focuseDay,
+        required this.onDaySelected});
 
-  @override
-  State<Calendar> createState() => _CalendarState();
-}
-
-class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     final defaultBoxDeco = BoxDecoration(
@@ -63,16 +58,16 @@ class _CalendarState extends State<Calendar> {
           color: PRIMARY_COLOR,
         ),
       ),
-      onDaySelected: widget.onDaySelected,
+      onDaySelected: onDaySelected,
       selectedDayPredicate: (DateTime date) {
         // 선택된 날짜 표시하는 법
-        if (widget.selectedDay == null) {
+        if (selectedDay == null) {
           return false;
         }
 
-        return date.year == widget.selectedDay!.year &&
-            date.month == widget.selectedDay!.month &&
-            date.day == widget.selectedDay!.day;
+        return date.year == selectedDay!.year &&
+            date.month == selectedDay!.month &&
+            date.day == selectedDay!.day;
       },
     );
   }
