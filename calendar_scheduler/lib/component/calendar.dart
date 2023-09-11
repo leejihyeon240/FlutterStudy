@@ -26,7 +26,7 @@ class Calendar extends StatelessWidget {
 
     return TableCalendar(
       locale: 'ko_KR',
-      focusedDay: widget.focuseDay, // 외부에서 값을 받아올 때 final로 해주고, widget 붙여주면 됨
+      focusedDay: focuseDay, // 외부에서 값을 받아올 때 final로 해주고, widget 붙여주면 됨
       firstDay: DateTime(1800), // 가장 첫번째 년도
       lastDay: DateTime(3000), // 가장 미래의 년도
       headerStyle: HeaderStyle(

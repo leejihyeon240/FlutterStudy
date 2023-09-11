@@ -1,4 +1,5 @@
 import 'package:calendar_scheduler/component/calendar.dart';
+import 'package:calendar_scheduler/component/schedule_card.dart';
 import 'package:calendar_scheduler/component/today_banner.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 8.0),
             TodayBanner(selectedDay: selectedDay, scheduleCount: 3),
+            SizedBox(
+              height: 8.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ScheduleCard(
+                  startTime: 8,
+                  endTime: 9,
+                  content: '프로그래밍 공부하기',
+                  color: Colors.red),
+            ),
           ],
         ),
       ),
@@ -38,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    setState(() { // StatefulWidget이어야 setState 사용 가능
+    setState(() {
+      // StatefulWidget이어야 setState 사용 가능
       this.selectedDay = selectedDay;
       this.focuseDay = selectedDay; // 선택된 날짜 상태 업데이트
     });
