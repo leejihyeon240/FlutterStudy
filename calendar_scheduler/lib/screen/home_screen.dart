@@ -1,6 +1,8 @@
 import 'package:calendar_scheduler/component/calendar.dart';
+import 'package:calendar_scheduler/component/schedule_bottom_sheet.dart';
 import 'package:calendar_scheduler/component/schedule_card.dart';
 import 'package:calendar_scheduler/component/today_banner.dart';
+import 'package:calendar_scheduler/const/colors.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: renderFloatingActionButton(), // 플로팅 버튼
       body: SafeArea(
         child: Column(
           children: [
@@ -35,24 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: 8.0,
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListView.separated( // 좋구만유?
-                  itemCount: 3,
-                  separatorBuilder: (context, index){ // 리스트 사이에 간격 넣어줄 때 사용
-                    return SizedBox(height: 8.0);
-                  },
-                  itemBuilder: (context, index) {
-                    return ScheduleCard(
-                        startTime: 8,
-                        endTime: 9,
-                        content: '프로그래밍 공부하기',
-                        color: Colors.red);
-                  },
-                ),
-              ),
-            ),
+            _ScheduleList(),
           ],
         ),
       ),
@@ -65,5 +51,51 @@ class _HomeScreenState extends State<HomeScreen> {
       this.selectedDay = selectedDay;
       this.focuseDay = selectedDay; // 선택된 날짜 상태 업데이트
     });
+  }
+
+  FloatingActionButton renderFloatingActionButton() {
+    return FloatingActionButton( // 플로팅 버튼
+      onPressed: () {
+        showModalBottomSheet( // 밑에서 올라오는 시트(너무 유용!!), showModalBottomSheet 자체가 원래 화면 반만 차지하도록 되어있음
+          context: context,
+          isScrollControlled: true, // 그래서 이거 해주면 됨
+          builder: (_) {
+            return ScheduleBottomSheet();
+          },
+        );
+      },
+      backgroundColor: PRIMARY_COLOR,
+      child: Icon(
+        Icons.add,
+      ),
+    );
+  }
+}
+
+class _ScheduleList extends StatelessWidget {
+  const _ScheduleList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: ListView.separated(
+          // 좋구만유?
+          itemCount: 3,
+          separatorBuilder: (context, index) {
+            // 리스트 사이에 간격 넣어줄 때 사용
+            return SizedBox(height: 8.0);
+          },
+          itemBuilder: (context, index) {
+            return ScheduleCard(
+                startTime: 8,
+                endTime: 9,
+                content: '프로그래밍 공부하기',
+                color: Colors.red);
+          },
+        ),
+      ),
+    );
   }
 }
