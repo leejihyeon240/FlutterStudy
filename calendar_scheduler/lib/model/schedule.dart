@@ -7,7 +7,7 @@ class Schedules extends Table {
   // 1
   // 2
   // 3
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get id => integer().autoIncrement()(); // autoIncrement 자동으로 숫자를 매김
 
   // 내용
   TextColumn get content => text()();
@@ -26,6 +26,6 @@ class Schedules extends Table {
 
   // 생성날짜
   DateTimeColumn get createdAt => dateTime().clientDefault(
-        () => DateTime.now(),
+        () => DateTime.now(), // 항상 이 값이기 때문에 지정? 느낌
   )();
 }
