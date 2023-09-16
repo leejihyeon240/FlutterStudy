@@ -26,6 +26,6 @@ class Schedules extends Table {
 
   // 생성날짜
   DateTimeColumn get createdAt => dateTime().clientDefault(
-        () => DateTime.now(), // 항상 이 값이기 때문에 지정? 느낌
+        () => DateTime.now(), // 항상 이 값이기 때문에 지정? 느낌임
   )();
 }
