@@ -19,6 +19,10 @@ part 'drift_database.g.dart';
 )
 class LocalDatabase extends _$LocalDatabase{
   LocalDatabase() : super (_openConnection());
+
+  @override
+  int get schemaVersion => 1;
+
 }
 
 LazyDatabase _openConnection() {
