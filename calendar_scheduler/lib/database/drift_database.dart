@@ -20,6 +20,9 @@ part 'drift_database.g.dart';
 class LocalDatabase extends _$LocalDatabase{
   LocalDatabase() : super (_openConnection());
 
+  createSchedule(SchedulesCompanion data) =>
+      into(schedules).insert(data);
+
   @override
   int get schemaVersion => 1;
 
