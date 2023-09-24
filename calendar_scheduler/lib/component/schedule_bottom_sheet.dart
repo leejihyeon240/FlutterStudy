@@ -1,6 +1,9 @@
 import 'package:calendar_scheduler/component/custom_text_field.dart';
 import 'package:calendar_scheduler/const/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+import '../database/drift_database.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
   const ScheduleBottomSheet({super.key});
@@ -60,7 +63,27 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                     SizedBox(
                       height: 16.0,
                     ),
-                    _ColorPicker(),
+                    FutureBuilder<List<CategoryColor>>(
+                        future:
+                        GetIt.I<LocalDatabase>().getCategoryColors(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData &&
+                              selectedColorId == null &&
+                              snapshot.data!.isNotEmpty) {
+                            selectedColorId = snapshot.data![0].id;
+                          }
+
+                          return _ColorPicker(
+                            colors:
+                            snapshot.hasData ? snapshot.data! : [],
+                            selectedColorId: selectedColorId,
+                            colorIdSetter: (int id) {
+                              setState(() {
+                                selectedColorId = id;
+                              });
+                            },
+                          );
+                        }),
                     SizedBox(
                       height: 8.0,
                     ),
@@ -87,7 +110,6 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     if (formKey.currentState!.validate()) {
       // 검증
       formKey.currentState!.save(); // 오 버튼 눌렀을 때 값 저장 잘 된다
-
     } else {}
   }
 }
@@ -141,7 +163,9 @@ class _Contents extends StatelessWidget {
 }
 
 class _ColorPicker extends StatelessWidget {
-  const _ColorPicker({super.key});
+  final List<Color> colors;
+
+  const _ColorPicker({required this.colors, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -149,15 +173,7 @@ class _ColorPicker extends StatelessWidget {
       // Wrap : 줄바꿈이 알아서 됨
       spacing: 8.0,
       runSpacing: 10.0,
-      children: [
-        renderColor(Colors.red),
-        renderColor(Colors.orange),
-        renderColor(Colors.yellow),
-        renderColor(Colors.green),
-        renderColor(Colors.blue),
-        renderColor(Colors.indigo),
-        renderColor(Colors.purple),
-      ],
+      children: colors.map((e) => renderColor(e)).toList(),
     );
   }
 
