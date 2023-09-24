@@ -32,6 +32,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
               padding: EdgeInsets.only(bottom: bottomInset),
               child: Form( // TextFormField를 사용하기 위해 감싸줘야함
                 key: formKey, // 일종의 컨트롤러로 작용
+                autovalidateMode: AutovalidateMode.always, // 자동으로 validate이 됨
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
