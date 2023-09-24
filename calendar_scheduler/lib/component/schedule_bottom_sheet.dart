@@ -18,6 +18,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   int? startTime;
   int? endTime;
   String? content;
+  int? selectedColorId;
 
   @override
   Widget build(BuildContext context) {
@@ -64,20 +65,18 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                       height: 16.0,
                     ),
                     FutureBuilder<List<CategoryColor>>(
-                        future:
-                        GetIt.I<LocalDatabase>().getCategoryColors(),
+                        future: GetIt.I<LocalDatabase>().getCategoryColors(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData &&
                               selectedColorId == null &&
-                              snapshot.data!.isNotEmpty) {
+                              snapshot.data!.isNotEmpty) { // 첫번째 값으로 세팅(자동으로 빨간색이 선택되도록)
                             selectedColorId = snapshot.data![0].id;
                           }
 
                           return _ColorPicker(
-                            colors:
-                            snapshot.hasData ? snapshot.data! : [],
+                            colors: snapshot.hasData ? snapshot.data! : [],
                             selectedColorId: selectedColorId,
-                            colorIdSetter: (int id) {
+                            colorIdSetter: (int id) { // 색깔 누를 때마다 테두리 변경
                               setState(() {
                                 selectedColorId = id;
                               });
@@ -162,10 +161,19 @@ class _Contents extends StatelessWidget {
   }
 }
 
-class _ColorPicker extends StatelessWidget {
-  final List<Color> colors;
+typedef ColorIdSetter = void Function(int id);
 
-  const _ColorPicker({required this.colors, super.key});
+class _ColorPicker extends StatelessWidget {
+  final List<CategoryColor> colors;
+  final int? selectedColorId;
+  final ColorIdSetter colorIdSetter;
+
+  const _ColorPicker({
+    required this.colors,
+    required this.selectedColorId,
+    required this.colorIdSetter,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -173,15 +181,38 @@ class _ColorPicker extends StatelessWidget {
       // Wrap : 줄바꿈이 알아서 됨
       spacing: 8.0,
       runSpacing: 10.0,
-      children: colors.map((e) => renderColor(e)).toList(),
+      children: colors
+          .map(
+            (e) => GestureDetector(
+          onTap: () {
+            colorIdSetter(e.id); // 어떤 색상이 선택되었는지 전달
+          },
+          child: renderColor(
+            e,
+            selectedColorId == e.id,
+          ),
+        ),
+      )
+          .toList(),
     );
   }
 
-  Widget renderColor(Color color) {
+  Widget renderColor(CategoryColor color, bool isSelected) {
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color,
+        color: Color(
+          int.parse(
+            'FF${color.hexCode}',
+            radix: 16,
+          ),
+        ),
+        border: isSelected
+          ? Border.all(
+        color: Colors.black,
+        width: 4.0,
+      )
+          : null,
       ),
       width: 32.0,
       height: 32.0,
