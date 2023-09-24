@@ -12,6 +12,10 @@ class ScheduleBottomSheet extends StatefulWidget {
 class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   final GlobalKey<FormState> formKey = GlobalKey();
 
+  int? startTime;
+  int? endTime;
+  String? content;
+
   @override
   Widget build(BuildContext context) {
     final bottomInset =
@@ -30,17 +34,29 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
             child: Padding(
               // 패딩을 추가해서 키보드 만큼 공간을 줘야함
               padding: EdgeInsets.only(bottom: bottomInset),
-              child: Form( // TextFormField를 사용하기 위해 감싸줘야함
+              child: Form(
+                // TextFormField를 사용하기 위해 감싸줘야함
                 key: formKey, // 일종의 컨트롤러로 작용
                 autovalidateMode: AutovalidateMode.always, // 자동으로 validate이 됨
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Time(),
+                    _Time(
+                      onStartSaved: (String? val) {
+                        startTime = int.parse(val!);
+                      },
+                      onEndSaved: (String? val) {
+                        endTime = int.parse(val!);
+                      },
+                    ),
                     SizedBox(
                       height: 16.0,
                     ),
-                    _Contents(),
+                    _Contents(
+                      onSaved: (String? val) {
+                        content = val;
+                      },
+                    ),
                     SizedBox(
                       height: 16.0,
                     ),
@@ -59,23 +75,29 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     );
   }
 
-  void onSavePressed() { // 저장 버튼을 눌렀을 때 formkey 작용하도록
+  void onSavePressed() {
+    // 저장 버튼을 눌렀을 때 formkey 작용하도록
     // formKey는 생성을 했는데
     // Form 위젯과 결합을 안했을때
-    if (formKey.currentState == null) { // 버그 처리
+    if (formKey.currentState == null) {
+      // 버그 처리
       return;
     }
 
-    if (formKey.currentState!.validate()) { // 검증
+    if (formKey.currentState!.validate()) {
+      // 검증
+      formKey.currentState!.save(); // 오 버튼 눌렀을 때 값 저장 잘 된다
 
-    }else{
-
-    }
+    } else {}
   }
 }
 
 class _Time extends StatelessWidget {
-  const _Time({super.key});
+  final FormFieldSetter<String> onStartSaved;
+  final FormFieldSetter<String> onEndSaved;
+
+  const _Time(
+      {required this.onStartSaved, required this.onEndSaved, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +107,7 @@ class _Time extends StatelessWidget {
             child: CustomTextField(
           label: '시작 시간',
           isTime: true,
+          onSaved: onStartSaved,
         )),
         SizedBox(
           width: 16.0,
@@ -93,6 +116,7 @@ class _Time extends StatelessWidget {
             child: CustomTextField(
           label: '마감 시간',
           isTime: true,
+          onSaved: onEndSaved,
         )),
       ],
     );
@@ -100,7 +124,9 @@ class _Time extends StatelessWidget {
 }
 
 class _Contents extends StatelessWidget {
-  const _Contents({super.key});
+  final FormFieldSetter<String> onSaved;
+
+  const _Contents({required this.onSaved, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +134,7 @@ class _Contents extends StatelessWidget {
       child: CustomTextField(
         label: '내용',
         isTime: false,
+        onSaved: onSaved,
       ),
     );
   }
