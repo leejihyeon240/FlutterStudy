@@ -33,8 +33,16 @@ class CustomTextField extends StatelessWidget {
     );
   }
 
-  Widget renderTextField() { // 너무 유용한데 어렵지만 할 수 있다
-    return TextField(
+  Widget renderTextField() {
+    // 너무 유용한데 어렵지만 할 수 있다
+    return TextFormField(
+      // Form : 동시에 텍스트필드를 통합관리하기 적합함
+      validator: (String? val) {
+        if (val == null || val.isEmpty) { // 조건에 맞지 않으면 에러(관리해주고 있음)
+          return '값을 입력해주세요';
+        }
+        return null;
+      },
       cursorColor: Colors.grey,
       maxLines: isTime ? 1 : null, // maxLines : 줄바꿈
       expands: !isTime, // 어렵다 뭐냐

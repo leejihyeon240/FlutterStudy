@@ -2,8 +2,15 @@ import 'package:calendar_scheduler/component/custom_text_field.dart';
 import 'package:calendar_scheduler/const/colors.dart';
 import 'package:flutter/material.dart';
 
-class ScheduleBottomSheet extends StatelessWidget {
+class ScheduleBottomSheet extends StatefulWidget {
   const ScheduleBottomSheet({super.key});
+
+  @override
+  State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
+}
+
+class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
+  final GlobalKey<FormState> formKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -23,29 +30,46 @@ class ScheduleBottomSheet extends StatelessWidget {
             child: Padding(
               // 패딩을 추가해서 키보드 만큼 공간을 줘야함
               padding: EdgeInsets.only(bottom: bottomInset),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Time(),
-                  SizedBox(
-                    height: 16.0,
-                  ),
-                  _Contents(),
-                  SizedBox(
-                    height: 16.0,
-                  ),
-                  _ColorPicker(),
-                  SizedBox(
-                    height: 8.0,
-                  ),
-                  _SaveButton(),
-                ],
+              child: Form( // TextFormField를 사용하기 위해 감싸줘야함
+                key: formKey, // 일종의 컨트롤러로 작용
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Time(),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    _Contents(),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    _ColorPicker(),
+                    SizedBox(
+                      height: 8.0,
+                    ),
+                    _SaveButton(onPressed: onSavePressed),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void onSavePressed() { // 저장 버튼을 눌렀을 때 formkey 작용하도록
+    // formKey는 생성을 했는데
+    // Form 위젯과 결합을 안했을때
+    if (formKey.currentState == null) { // 버그 처리
+      return;
+    }
+
+    if (formKey.currentState!.validate()) { // 검증
+
+    }else{
+
+    }
   }
 }
 
@@ -122,7 +146,12 @@ class _ColorPicker extends StatelessWidget {
 }
 
 class _SaveButton extends StatelessWidget {
-  const _SaveButton({super.key});
+  final VoidCallback onPressed;
+
+  const _SaveButton({
+    required this.onPressed,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +160,7 @@ class _SaveButton extends StatelessWidget {
       children: [
         Expanded(
             child: ElevatedButton(
-                onPressed: () {},
+                onPressed: onPressed,
                 style: ElevatedButton.styleFrom(
                   primary: PRIMARY_COLOR,
                 ),
