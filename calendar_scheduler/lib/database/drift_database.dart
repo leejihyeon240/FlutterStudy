@@ -1,4 +1,5 @@
 // private 값들은 불러올 수 없다.
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:calendar_scheduler/model/category_color.dart';
@@ -20,8 +21,14 @@ part 'drift_database.g.dart';
 class LocalDatabase extends _$LocalDatabase{
   LocalDatabase() : super (_openConnection());
 
-  createSchedule(SchedulesCompanion data) =>
+  Future<int> createSchedule(SchedulesCompanion data) =>
       into(schedules).insert(data);
+
+  Future<int> createCategoryColor(CategoryColorsCompanion data) =>
+      into(categoryColors).insert(data);
+
+  Future<List<CategoryColor>> getCategoryColors() => // 테이블에서 CategoryColor를 가지고 오는 코드
+      select(categoryColors).get(); // 가져올 땐 select 사용
 
   @override
   int get schemaVersion => 1;
