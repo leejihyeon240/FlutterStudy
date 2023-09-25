@@ -1,12 +1,20 @@
 import 'package:calendar_scheduler/component/custom_text_field.dart';
 import 'package:calendar_scheduler/const/colors.dart';
+import 'package:drift/drift.dart' show Value; // colum이 겹쳐서
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../database/drift_database.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
-  const ScheduleBottomSheet({super.key});
+  final DateTime selectedDate;
+  final int? scheduleId;
+
+  const ScheduleBottomSheet({
+    required this.selectedDate,
+    this.scheduleId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
@@ -41,7 +49,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
               child: Form(
                 // TextFormField를 사용하기 위해 감싸줘야함
                 key: formKey, // 일종의 컨트롤러로 작용
-                autovalidateMode: AutovalidateMode.always, // 자동으로 validate이 됨
+                // autovalidateMode: AutovalidateMode.always, // 자동으로 validate이 됨
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -97,7 +105,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     );
   }
 
-  void onSavePressed() {
+  void onSavePressed() async {
     // 저장 버튼을 눌렀을 때 formkey 작용하도록
     // formKey는 생성을 했는데
     // Form 위젯과 결합을 안했을때
@@ -109,6 +117,18 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     if (formKey.currentState!.validate()) {
       // 검증
       formKey.currentState!.save(); // 오 버튼 눌렀을 때 값 저장 잘 된다
+
+      final key = await GetIt.I<LocalDatabase>().createSchedule(
+          SchedulesCompanion(
+            date: Value(widget.selectedDate),
+            startTime: Value(startTime!),
+            endTime: Value(endTime!),
+            content: Value(content!),
+            colorId: Value(selectedColorId!),
+          ),
+      );
+
+      Navigator.of(context).pop(); // 바텀시트 닫기
     } else {}
   }
 }
