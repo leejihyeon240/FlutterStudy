@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime selectedDay = DateTime(
+  DateTime selectedDay = DateTime.utc( // utc 기준으로 시간이 설정되도록 하기(안 하면 앱 제거 후 새로 하면 버그 생김)
     DateTime.now().year,
     DateTime.now().month,
     DateTime.now().day,
