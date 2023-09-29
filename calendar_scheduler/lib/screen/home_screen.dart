@@ -77,24 +77,36 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _ScheduleList extends StatelessWidget {
-  const _ScheduleList({super.key});
+  final DateTime selectedDate;
+
+  const _ScheduleList({required this.selectedDate, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: StreamBuilder<Object>(
-          stream: GetIt.I<LocalDatabase>().watchSchedules(),
+        child: StreamBuilder<List<Schedule>>(
+          stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDate),
           builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasData && snapshot.data!.isEmpty) {
+              return Center(
+                child: Text('스케줄이 없습니다.'),
+              );
+            }
             return ListView.separated(
               // 좋구만유?
-              itemCount: 3,
+              itemCount: snapshot.data!.length,
               separatorBuilder: (context, index) {
                 // 리스트 사이에 간격 넣어줄 때 사용
                 return SizedBox(height: 8.0);
               },
               itemBuilder: (context, index) {
+
                 return ScheduleCard(
                     startTime: 8,
                     endTime: 9,

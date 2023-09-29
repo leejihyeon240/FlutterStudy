@@ -30,7 +30,7 @@ class LocalDatabase extends _$LocalDatabase{
   Future<List<CategoryColor>> getCategoryColors() => // 테이블에서 CategoryColor를 가지고 오는 코드
       select(categoryColors).get(); // 가져올 땐 select 사용
 
-  Stream<List<Schedule>> watchSchedules() =>
+  Stream<List<Schedule>> watchSchedules(DateTime selectedDate) =>
       select(schedules).watch();
 
     @override
