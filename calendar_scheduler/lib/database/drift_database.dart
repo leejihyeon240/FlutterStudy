@@ -38,7 +38,7 @@ class LocalDatabase extends _$LocalDatabase{
     ]);
 
     query.where(schedules.date.equals(date));
-    query.orderBy(
+    query.orderBy( // 정렬하기
       [
         // asc -> ascending 오름차순
         // desc -> descending 내림차순
