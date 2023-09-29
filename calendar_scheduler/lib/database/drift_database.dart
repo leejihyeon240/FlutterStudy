@@ -9,6 +9,8 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../model/schedule_with_color.dart';
+
 // private 값까지 불러올 수 있다.
 part 'drift_database.g.dart';
 
@@ -30,12 +32,34 @@ class LocalDatabase extends _$LocalDatabase{
   Future<List<CategoryColor>> getCategoryColors() => // 테이블에서 CategoryColor를 가지고 오는 코드
       select(categoryColors).get(); // 가져올 땐 select 사용
 
-  Stream<List<Schedule>> watchSchedules(DateTime selectedDate) =>
-      select(schedules).watch();
+  Stream<List<ScheduleWithColor>> watchSchedules(DateTime date) {
+    final query = select(schedules).join([
+      innerJoin(categoryColors, categoryColors.id.equalsExp(schedules.colorId))
+    ]);
 
-    @override
+    query.where(schedules.date.equals(date));
+    query.orderBy(
+      [
+        // asc -> ascending 오름차순
+        // desc -> descending 내림차순
+        OrderingTerm.asc(schedules.startTime),
+      ],
+    );
+
+    return query.watch().map(
+          (rows) => rows
+          .map(
+            (row) => ScheduleWithColor(
+          schedule: row.readTable(schedules),
+          categoryColor: row.readTable(categoryColors),
+        ),
+      )
+          .toList(),
+    );
+  }
+
+  @override
   int get schemaVersion => 1;
-
 }
 
 LazyDatabase _openConnection() {
