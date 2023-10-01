@@ -32,6 +32,9 @@ class LocalDatabase extends _$LocalDatabase{
   Future<List<CategoryColor>> getCategoryColors() => // 테이블에서 CategoryColor를 가지고 오는 코드
       select(categoryColors).get(); // 가져올 땐 select 사용
 
+  Future<int> removeSchedule(int id) =>
+      (delete(schedules)..where((tbl) => tbl.id.equals(id))).go();
+
   Stream<List<ScheduleWithColor>> watchSchedules(DateTime date) {
     final query = select(schedules).join([
       innerJoin(categoryColors, categoryColors.id.equalsExp(schedules.colorId))
