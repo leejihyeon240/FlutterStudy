@@ -37,88 +37,122 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       }, // 이건 걍 외우세요~
-      child: SafeArea(
-        child: Container(
-          color: Colors.white,
-          height: MediaQuery.of(context).size.height / 2 + bottomInset,
-          child: Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-            child: Padding(
-              // 패딩을 추가해서 키보드 만큼 공간을 줘야함
-              padding: EdgeInsets.only(bottom: bottomInset),
-              child: Form(
-                // TextFormField를 사용하기 위해 감싸줘야함
-                key: formKey, // 일종의 컨트롤러로 작용
-                // autovalidateMode: AutovalidateMode.always, // 자동으로 validate이 됨
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _Time(
-                      onStartSaved: (String? val) {
-                        startTime = int.parse(val!);
-                      },
-                      onEndSaved: (String? val) {
-                        endTime = int.parse(val!);
-                      },
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    _Contents(
-                      onSaved: (String? val) {
-                        content = val;
-                      },
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    FutureBuilder<List<CategoryColor>>(
-                        future: GetIt.I<LocalDatabase>().getCategoryColors(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData &&
-                              selectedColorId == null &&
-                              snapshot.data!.isNotEmpty) { // 첫번째 값으로 세팅(자동으로 빨간색이 선택되도록)
-                            selectedColorId = snapshot.data![0].id;
-                          }
+      child: FutureBuilder<Schedule>(
+          future: widget.scheduleId == null
+              ? null
+              : GetIt.I<LocalDatabase>().getScheduleById(widget.scheduleId!),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('스케줄을 불러올 수 없습니다.'),
+              );
+            }
 
-                          return _ColorPicker(
-                            colors: snapshot.hasData ? snapshot.data! : [],
-                            selectedColorId: selectedColorId,
-                            colorIdSetter: (int id) { // 색깔 누를 때마다 테두리 변경
-                              setState(() {
-                                selectedColorId = id;
-                              });
+            // FutureBuilder 처음 실행됐고
+            // 로딩중일때
+            if (snapshot.connectionState != ConnectionState.none &&
+                !snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            // Future가 실행이 되고
+            // 값이 있는데 단 한번도 startTime이 세팅되지 않았을때
+            if (snapshot.hasData && startTime == null) {
+              startTime = snapshot.data!.startTime;
+              endTime = snapshot.data!.endTime;
+              content = snapshot.data!.content;
+              selectedColorId = snapshot.data!.colorId;
+            }
+            return SafeArea(
+              child: Container(
+                color: Colors.white,
+                height: MediaQuery.of(context).size.height / 2 + bottomInset,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+                  child: Padding(
+                    // 패딩을 추가해서 키보드 만큼 공간을 줘야함
+                    padding: EdgeInsets.only(bottom: bottomInset),
+                    child: Form(
+                      // TextFormField를 사용하기 위해 감싸줘야함
+                      key: formKey, // 일종의 컨트롤러로 작용
+                      // autovalidateMode: AutovalidateMode.always, // 자동으로 validate이 됨
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _Time(
+                            onStartSaved: (String? val) {
+                              startTime = int.parse(val!);
                             },
-                          );
-                        }),
-                    SizedBox(
-                      height: 8.0,
+                            onEndSaved: (String? val) {
+                              endTime = int.parse(val!);
+                            },
+                            startInitialValue: startTime?.toString() ?? '',
+                            endInitialValue: endTime?.toString() ?? '',
+                          ),
+                          SizedBox(
+                            height: 16.0,
+                          ),
+                          _Contents(
+                            onSaved: (String? val) {
+                              content = val;
+                            },
+                            initialValue: content ?? '',
+                          ),
+                          SizedBox(
+                            height: 16.0,
+                          ),
+                          FutureBuilder<List<CategoryColor>>(
+                              future:
+                                  GetIt.I<LocalDatabase>().getCategoryColors(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData &&
+                                    selectedColorId == null &&
+                                    snapshot.data!.isNotEmpty) {
+                                  // 첫번째 값으로 세팅(자동으로 빨간색이 선택되도록)
+                                  selectedColorId = snapshot.data![0].id;
+                                }
+
+                                return _ColorPicker(
+                                  colors:
+                                      snapshot.hasData ? snapshot.data! : [],
+                                  selectedColorId: selectedColorId,
+                                  colorIdSetter: (int id) {
+                                    // 색깔 누를 때마다 테두리 변경
+                                    setState(() {
+                                      selectedColorId = id;
+                                    });
+                                  },
+                                );
+                              }),
+                          SizedBox(
+                            height: 8.0,
+                          ),
+                          _SaveButton(onPressed: onSavePressed),
+                        ],
+                      ),
                     ),
-                    _SaveButton(onPressed: onSavePressed),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
+            );
+          }),
     );
   }
 
   void onSavePressed() async {
-    // 저장 버튼을 눌렀을 때 formkey 작용하도록
     // formKey는 생성을 했는데
     // Form 위젯과 결합을 안했을때
     if (formKey.currentState == null) {
-      // 버그 처리
       return;
     }
 
     if (formKey.currentState!.validate()) {
-      // 검증
-      formKey.currentState!.save(); // 오 버튼 눌렀을 때 값 저장 잘 된다
+      formKey.currentState!.save();
 
-      final key = await GetIt.I<LocalDatabase>().createSchedule(
+      if (widget.scheduleId == null) { // scheduleId가 null이면 새로 생성
+        await GetIt.I<LocalDatabase>().createSchedule(
           SchedulesCompanion(
             date: Value(widget.selectedDate),
             startTime: Value(startTime!),
@@ -126,19 +160,40 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
             content: Value(content!),
             colorId: Value(selectedColorId!),
           ),
-      );
+        );
+      } else { // null이 아니면 무조건 업데이트 하겠다
+        await GetIt.I<LocalDatabase>().updateScheduleById(
+          widget.scheduleId!,
+          SchedulesCompanion(
+            date: Value(widget.selectedDate),
+            startTime: Value(startTime!),
+            endTime: Value(endTime!),
+            content: Value(content!),
+            colorId: Value(selectedColorId!),
+          ),
+        );
+      }
 
-      Navigator.of(context).pop(); // 바텀시트 닫기
-    } else {}
+      Navigator.of(context).pop();
+    } else {
+      print('에러가 있습니다.');
+    }
   }
 }
 
 class _Time extends StatelessWidget {
   final FormFieldSetter<String> onStartSaved;
   final FormFieldSetter<String> onEndSaved;
+  final String startInitialValue;
+  final String endInitialValue;
 
-  const _Time(
-      {required this.onStartSaved, required this.onEndSaved, super.key});
+  const _Time({
+    required this.onStartSaved,
+    required this.onEndSaved,
+    required this.startInitialValue,
+    required this.endInitialValue,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +204,7 @@ class _Time extends StatelessWidget {
           label: '시작 시간',
           isTime: true,
           onSaved: onStartSaved,
+          initialValue: startInitialValue,
         )),
         SizedBox(
           width: 16.0,
@@ -158,6 +214,7 @@ class _Time extends StatelessWidget {
           label: '마감 시간',
           isTime: true,
           onSaved: onEndSaved,
+          initialValue: endInitialValue,
         )),
       ],
     );
@@ -166,8 +223,13 @@ class _Time extends StatelessWidget {
 
 class _Contents extends StatelessWidget {
   final FormFieldSetter<String> onSaved;
+  final String initialValue;
 
-  const _Contents({required this.onSaved, super.key});
+  const _Contents({
+    required this.onSaved,
+    required this.initialValue,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +238,7 @@ class _Contents extends StatelessWidget {
         label: '내용',
         isTime: false,
         onSaved: onSaved,
+        initialValue: initialValue,
       ),
     );
   }
@@ -204,15 +267,15 @@ class _ColorPicker extends StatelessWidget {
       children: colors
           .map(
             (e) => GestureDetector(
-          onTap: () {
-            colorIdSetter(e.id); // 어떤 색상이 선택되었는지 전달
-          },
-          child: renderColor(
-            e,
-            selectedColorId == e.id,
-          ),
-        ),
-      )
+              onTap: () {
+                colorIdSetter(e.id); // 어떤 색상이 선택되었는지 전달
+              },
+              child: renderColor(
+                e,
+                selectedColorId == e.id,
+              ),
+            ),
+          )
           .toList(),
     );
   }
@@ -228,11 +291,11 @@ class _ColorPicker extends StatelessWidget {
           ),
         ),
         border: isSelected
-          ? Border.all(
-        color: Colors.black,
-        width: 4.0,
-      )
-          : null,
+            ? Border.all(
+                color: Colors.black,
+                width: 4.0,
+              )
+            : null,
       ),
       width: 32.0,
       height: 32.0,

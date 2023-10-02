@@ -23,6 +23,9 @@ part 'drift_database.g.dart';
 class LocalDatabase extends _$LocalDatabase{
   LocalDatabase() : super (_openConnection());
 
+  Future<Schedule> getScheduleById(int id) =>
+      (select(schedules)..where((tbl) => tbl.id.equals(id))).getSingle(); // getSingle = 하나의 값만 리턴
+
   Future<int> createSchedule(SchedulesCompanion data) =>
       into(schedules).insert(data);
 
@@ -31,6 +34,9 @@ class LocalDatabase extends _$LocalDatabase{
 
   Future<List<CategoryColor>> getCategoryColors() => // 테이블에서 CategoryColor를 가지고 오는 코드
       select(categoryColors).get(); // 가져올 땐 select 사용
+
+  Future<int> updateScheduleById(int id, SchedulesCompanion data) =>
+      (update(schedules)..where((tbl) => tbl.id.equals(id))).write(data);
 
   Future<int> removeSchedule(int id) =>
       (delete(schedules)..where((tbl) => tbl.id.equals(id))).go();
