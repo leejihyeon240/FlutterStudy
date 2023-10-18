@@ -24,14 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
     zoom: 15,
   );
 
-  static final double okDistance = 100;
+  static final double okDistance = 100; // 마커 주변 원 크기 조절
   static final Circle withinDistanceCircle = Circle(
     circleId: CircleId('withinDistanceCircle'),
     center: companyLatLng,
-    fillColor: Colors.blue.withOpacity(0.5),
-    radius: okDistance,
-    strokeColor: Colors.blue,
-    strokeWidth: 1,
+    fillColor: Colors.blue.withOpacity(0.5), // 원 색깔 및 투명도 조절
+    radius: okDistance, // 원 크기
+    strokeColor: Colors.blue, // 원 테두리 색깔
+    strokeWidth: 1, // 원 테두리 굵기
   );
   static final Circle notWithinDistanceCircle = Circle(
     circleId: CircleId('notWithinDistanceCircle'),
