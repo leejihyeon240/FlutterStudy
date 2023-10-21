@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     zoom: 15,
   );
 
-  static final double okDistance = 100;
+  static final double okDistance = 300;
   static final Circle withinDistanceCircle = Circle(
     circleId: CircleId('withinDistanceCircle'),
     center: companyLatLng,
