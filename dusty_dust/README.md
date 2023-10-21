@@ -77,4 +77,37 @@ SliverAppBar(
               Navigator.of(context).pop();
             },
           ),
+
+Drawer(
+      backgroundColor: darkColor,
+      child: ListView(
+        children: [
+          DrawerHeader(
+            child: Text(
+              '지역 선택',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20.0,
+              ),
+            ),
+          ),
+          ...regions
+              .map(
+                (e) => ListTile(
+                  tileColor: Colors.white,
+                  selectedTileColor: lightColor,
+                  selectedColor: Colors.black,
+                  selected: e == selectedRegion,
+                  onTap: () {
+                    onRegionTap(e);
+                  },
+                  title: Text(
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+        ],
+      ),
+    );
 ```
