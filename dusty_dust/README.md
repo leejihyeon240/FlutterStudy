@@ -1,10 +1,8 @@
 ### 앱바로 사용했던 공간 만큼만 띄워짐
 
-'''
-
+₩₩₩
 margin: EdgeInsets.only(top: kToolbarHeight),
-
-'''
+₩₩₩
 
 ### SliverAppBar = AppBar 도 같이 스크롤 되게 함
 
