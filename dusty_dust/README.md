@@ -1,12 +1,12 @@
 ### 앱바로 사용했던 공간 만큼만 띄워짐
 
-₩₩₩
+```dart
 margin: EdgeInsets.only(top: kToolbarHeight),
-₩₩₩
+```
 
 ### SliverAppBar = AppBar 도 같이 스크롤 되게 함
 
-'''
+```dart
 SliverAppBar(
       backgroundColor: status.primaryColor,
       pinned: true,
@@ -62,10 +62,10 @@ SliverAppBar(
         ),
       ),
     );
-'''
+```
 
 ### drawer = 서랍
-'''
+```dart
     drawer: MainDrawer(
             darkColor: status.darkColor,
             lightColor: status.lightColor,
@@ -77,4 +77,4 @@ SliverAppBar(
               Navigator.of(context).pop();
             },
           ),
-'''
+```
