@@ -21,8 +21,15 @@ class BasicAppbarTabbarScreen extends StatelessWidget {
                 .toList(),
           ),
         ),
-        body: Column(
-          children: [],
+        body: TabBarView(
+          physics: const NeverScrollableScrollPhysics(), // 옆으로 스크롤 밀어서 이동 제한(이거 난 좋은데 왜 제한)
+          children: TABS
+              .map((e) => Center(
+                    child: Icon(
+                      e.icon,
+                    ),
+                  ))
+              .toList(),
         ),
       ),
     );
