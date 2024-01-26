@@ -27,7 +27,7 @@ class DefaultLayout extends StatelessWidget {
     );
   }
 
-  AppBar? renderAppBar(){
+  AppBar? renderAppBar(){ // null을 return 해주어야 하니까, ? 추가
     if(title == null){
       return null;
     }else{
