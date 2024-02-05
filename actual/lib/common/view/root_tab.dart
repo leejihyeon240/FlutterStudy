@@ -1,5 +1,6 @@
 import 'package:actual/common/const/colors.dart';
 import 'package:actual/common/layout/default_layout.dart';
+import 'package:actual/restaurant/view/restaurant_screen.dart';
 import 'package:flutter/material.dart';
 
 class RootTap extends StatefulWidget {
@@ -42,11 +43,7 @@ class _RootTapState extends State<RootTap> with SingleTickerProviderStateMixin {
         physics: NeverScrollableScrollPhysics(), // 옆으로 스와이프 방지
         controller: controller,
         children: [
-          Center(
-            child: Container(
-              child: Text('홈'),
-            ),
-          ),
+          RestaurantScreen(),
           Center(
             child: Container(
               child: Text('음식'),
