@@ -1,16 +1,50 @@
-# actual
+# 이론
 
-A new Flutter project.
+### Session?
+유저의 정보를 데이터베이스에 저장하고 상태를 유지하는 도구
 
-## Getting Started
+### Session 특징
+*  Session은 특수한 ID 값으로 구성되어있다.
+*   Session은 서버에서 생성되며 클라이언트에서 쿠키를 통해 저장된다.
+*   클라이언트에서 요청을 보낼때 Session ID를 같이 보내면 현재 요청을 보내는 사용자가 누구인지 서버에서 알 수 있다. (요청마다 매번 아이디와 비밀번호를 물어볼 필요 없음) --> 단점이 DB 안에서 대조를 해보기 전까지는 세션 값이 아무런 의미가 없다. 그래서 정보랑 교환을 해야함.
+*   Session ID는 데이터베이스에 저장되기때문에 요청이 있을때마다 매번 데이터베이스를 확인해야한다.
+*   서버에서 데이터가 저장되기때문에 클라이언트에 사용자 정보가 노출될 위험이 없다.
+*   데이터베이스에 Session을 저장해야하기때문에 Horizontal Scaling(수평적으로 서버를 늘리는 것 : 같은 서버를 여러 개 복제 시켜서 트래픽을 분산 시킴 <> 수직적 스케일링 : 하나의 서버 스펙을 업그레이드)이 어렵다.
 
-This project is a starting point for a Flutter application.
+### Token
+유저의 정보를 Base 64로 인코딩된 String 값에 저장하는 도구
 
-A few resources to get you started if this is your first Flutter project:
+### Token 특징
+*   Token은 Header, Payload, Signature로 구성되어있으며 Base 64로 인코딩 되어있다.
+*   Token은 서버에서 생성되며 클라이언트에서 저장된다.
+*   클라이언트에서 요청을 보낼때 Token ID를 같이 보내면 현재 요청을 보내는 사용자가 누 구인지 서버에서 알 수 있다. (요청마다 매번 아이디와 비밀번호를 물어볼 필요 없음)
+*   Token은 데이터베이스에 저장되지않고 Signature 값을 이용해서 검증할 수 있다. 그래서 검증할때마다 데이터베이스를 매번 들여다볼 필요가 없다.
+*   정보가 모두 토큰에 담겨있고 클라이언트에서 토큰을 저장하기 때문에 정보 유출의 위험이 있다.
+*   데이터베이스가 필요없기때문에 Horizontal Scaling이 쉽다.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### JWT?
+*   JSON Web Token의 약자
+*   Header, Payload, Signature로 이루어져있다.
+*   Base64로 인코딩 되어있다. (Binary to Text)
+*   Header는 토큰의 종류와 암호화 알고리즘등 토큰에대한 정보가 들어있다.
+*   Payload는 발행일, 만료일, 사용자 ID등 사용자 검증에 필요한 정보가 들어있다.
+*   Signature는 Base64 인코딩된 Header와 Payload를 알고리즘으로 싸인한 값이 들어 있다. 이 값을 기반으로 토큰이 발급된뒤로 조작되었는지 확인할 수 있다.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Refresh Token & Access Token
+*   두 토큰 모두 JWT 기반이다.
+*   Access Token은 API 요청을 할때 검증용 토큰으로 사용된다. 즉, 인증이 필요한 API를 사용할때는 꼭 Access Token을 Header에 넣어서 보내야한다. 예) 유저 정보 수정, 회사 채용공고 지원 인원 확인 등
+*   Refresh Token은 Access Token을 추가로 발급할때 사용된다. Access Token을 새로고침 (Refresh)하는 기능이 있기 때문에 Refresh Token이라고 부른다.
+*   Access Token은 유효기간이 짧고 Refresh Token은 유효기간이 길다.
+*   자주 노출되는 Access Token은 유효기간을 짧게해서 Token이 탈취돼도 해커가 오래 사용하지 못 하도록 방지할 수 있다.
+*   상대적으로 노출이 적은 Refresh Token의 경우 Access Token을 새로 발급받을때만 사용되기 때문에 탈취 가능성이 적다.
+<br>
+<img width="739" alt="스크린샷 2024-02-11 오후 11 41 53" src="https://github.com/leejihyeon240/FlutterStudy/assets/59243729/e3f922c2-be42-474e-9e03-038bc8331254">
+<br>
+
+### 세션과 토큰의 차이점
+* 저장 위치: 세션은 서버 측에서 사용자 정보를 저장하고 관리하는 반면, 토큰 기반 인증에서는 서버가 사용자 인증 후 토큰을 발급하고, 이 토큰은 클라이언트 측에 저장됩니다.
+* 상태 유지(스테이트풀) vs. 무상태(스테이트리스): 세션은 서버와 클라이언트 간 상태를 유지하는 방식이며, 토큰 기반 인증은 상태를 유지하지 않는(stateless) 방식입니다. 토큰을 사용할 때 서버는 토큰을 검증하기만 하면 되므로, 요청마다 사용자의 상태 정보를 유지할 필요가 없습니다.
+* 확장성: 토큰 기반 인증은 서버의 확장성 측면에서 유리합니다. 세션 정보를 유지하기 위해서는 서버 간 세션을 공유하거나 중앙 세션 저장소를 사용해야 하는데, 이는 복잡성과 부하를 증가시킬 수 있습니다. 반면 토큰은 클라이언트에 저장되므로 서버 확장성에 영향을 주지 않습니다.
+<br>
+<img width="739" alt="스크린샷 2024-02-11 오후 10 01 37" src="https://github.com/leejihyeon240/FlutterStudy/assets/59243729/8469c453-f8b8-4afb-beb3-19692a5cdced">
+<br>
