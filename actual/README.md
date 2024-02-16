@@ -48,3 +48,7 @@
 <br>
 <img width="739" alt="스크린샷 2024-02-11 오후 10 01 37" src="https://github.com/leejihyeon240/FlutterStudy/assets/59243729/8469c453-f8b8-4afb-beb3-19692a5cdced">
 <br>
+
+### Postman에서 인증 URL 테스트하기 (login)
+<img width="1069" alt="스크린샷 2024-02-16 오후 11 46 32" src="https://github.com/leejihyeon240/FlutterStudy/assets/59243729/e7a86f42-7135-49b2-9717-704b2659475b">
+
