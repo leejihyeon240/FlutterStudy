@@ -2,17 +2,28 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:actual/common/layout/default_layout.dart';
+import 'package:actual/common/view/root_tab.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/const/colors.dart';
+import '../../common/const/data.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  String username = '';
+  String password = '';
+
+  @override
   Widget build(BuildContext context) {
+
     final dio = Dio();
 
     // local host
@@ -42,19 +53,23 @@ class LoginScreen extends StatelessWidget {
                 ),
                 CustomTextFormField(
                   hintText: '이메일을 입력해주세요.',
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    username = value;
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 CustomTextFormField(
                   hintText: '비밀번호를 입력해주세요.',
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    password = value;
+                  },
                   obscureText: true,
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
                     // ID : 비밀번호
-                    final rawString = 'test@codefactory.ai:testtest';
+                    final rawString = '$username:$password';
 
                     // Base64로 인코딩 해야함
                     Codec<String, String> stringToBase64 = utf8.fuse(base64);
@@ -69,8 +84,21 @@ class LoginScreen extends StatelessWidget {
                       }),
                     );
 
+                    final refreshToken = resp.data['refreshToken'];
+                    final accessToken = resp.data['accessToken'];
+
+                    // storage 안에 값 저장
+                    await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
+                    await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
+
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => RootTap(),
+                      ),
+                    );
+
                     // data = 응답받은 데이터 값, 바디 값
-                    print(resp.data);
+                    // print(resp.data);
                   },
                   style: ElevatedButton.styleFrom(
                     primary: PRIMARY_COLOR,
