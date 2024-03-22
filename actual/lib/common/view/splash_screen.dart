@@ -36,6 +36,10 @@ class _SplashScreenState extends State<SplashScreen> {
           'authorization': 'Bearer $refreshToken',
         }),
       );
+
+      // 재실행 할 때마다 토큰 갱신
+      await storage.write(key: ACCESS_TOKEN_KEY, value: resp.data['accessToken']);
+
     } catch (e) {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
