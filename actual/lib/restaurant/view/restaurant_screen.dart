@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -46,22 +49,36 @@ class RestaurantScreen extends StatelessWidget {
                 // snapshot.data 안에는 각각의 레스토랑 정보가 들어있다링
                 itemCount: snapshot.data!.length, // 리스트뷰로 구현 해주기 위해 카운트!
                 itemBuilder: (_, index) {
-                  final item = snapshot.data![index]; // index를 통해 각각의 레스토랑 정보 가져옴
+                  final item =
+                      snapshot.data![index]; // index를 통해 각각의 레스토랑 정보 가져옴
                   // item --> [~,~,~]
+
+                  final pitem = RestaurantModel(
+                      id: item['id'],
+                      name: item['name'],
+                      thumbUrl: 'http://$ip${item['thumbUrl']}',
+                      tags: List<String>.from(item['tags']),
+                      priceRange: RestaurantPriceRange.values.firstWhere(
+                        (e) => e.name == item['priceRange'],
+                      ),
+                      ratings: item['ratings'],
+                      ratingsCount: item['ratingsCount'],
+                      deliveryTime: item['deliveryTime'],
+                      deliveryFee: item['deliveryFee']);
 
                   return RestaurantCard(
                     image: Image.network(
-                      'http://$ip${item['thumbUrl']}',
+                      pitem.thumbUrl, // 장점 : 오타 찾기
                       fit: BoxFit.cover,
                     ),
-                    name: item['name'],
+                    name: pitem.name,
                     // 타입 오류 해결 "다이나믹 --> String"
                     // 정의할 때 string된 리스트로 설정 해놨기 때문에
-                    tags: List<String>.from(item['tags']),
-                    ratingsCount: item['ratingsCount'],
-                    deliveryTime: item['deliveryTime'],
-                    deliveryFee: item['deliveryFee'],
-                    ratings: item['ratings'],
+                    tags: pitem.tags,
+                    ratingsCount: pitem.ratingsCount,
+                    deliveryTime: pitem.deliveryTime,
+                    deliveryFee: pitem.deliveryFee,
+                    ratings: pitem.ratings,
                   );
                 },
                 separatorBuilder: (_, index) {
