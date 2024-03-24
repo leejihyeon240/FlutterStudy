@@ -56,20 +56,10 @@ class RestaurantScreen extends StatelessWidget {
                   // json을 모델로 맵핑
                   final pItem = RestaurantModel.fromJson(json: item);
 
-                  return RestaurantCard(
-                    image: Image.network(
-                      pItem.thumbUrl, // 장점 : 오타 찾기
-                      fit: BoxFit.cover,
-                    ),
-                    name: pItem.name,
-                    // 타입 오류 해결 "다이나믹 --> String"
-                    // 정의할 때 string된 리스트로 설정 해놨기 때문에
-                    tags: pItem.tags,
-                    ratingsCount: pItem.ratingsCount,
-                    deliveryTime: pItem.deliveryTime,
-                    deliveryFee: pItem.deliveryFee,
-                    ratings: pItem.ratings,
+                  return RestaurantCard.fromModel(
+                    model: pItem,
                   );
+
                 },
                 separatorBuilder: (_, index) {
                   return SizedBox(height: 16.0);
