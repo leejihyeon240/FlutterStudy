@@ -53,32 +53,22 @@ class RestaurantScreen extends StatelessWidget {
                       snapshot.data![index]; // index를 통해 각각의 레스토랑 정보 가져옴
                   // item --> [~,~,~]
 
-                  final pitem = RestaurantModel(
-                      id: item['id'],
-                      name: item['name'],
-                      thumbUrl: 'http://$ip${item['thumbUrl']}',
-                      tags: List<String>.from(item['tags']),
-                      priceRange: RestaurantPriceRange.values.firstWhere(
-                        (e) => e.name == item['priceRange'],
-                      ),
-                      ratings: item['ratings'],
-                      ratingsCount: item['ratingsCount'],
-                      deliveryTime: item['deliveryTime'],
-                      deliveryFee: item['deliveryFee']);
+                  // json을 모델로 맵핑
+                  final pItem = RestaurantModel.fromJson(json: item);
 
                   return RestaurantCard(
                     image: Image.network(
-                      pitem.thumbUrl, // 장점 : 오타 찾기
+                      pItem.thumbUrl, // 장점 : 오타 찾기
                       fit: BoxFit.cover,
                     ),
-                    name: pitem.name,
+                    name: pItem.name,
                     // 타입 오류 해결 "다이나믹 --> String"
                     // 정의할 때 string된 리스트로 설정 해놨기 때문에
-                    tags: pitem.tags,
-                    ratingsCount: pitem.ratingsCount,
-                    deliveryTime: pitem.deliveryTime,
-                    deliveryFee: pitem.deliveryFee,
-                    ratings: pitem.ratings,
+                    tags: pItem.tags,
+                    ratingsCount: pItem.ratingsCount,
+                    deliveryTime: pItem.deliveryTime,
+                    deliveryFee: pItem.deliveryFee,
+                    ratings: pItem.ratings,
                   );
                 },
                 separatorBuilder: (_, index) {
